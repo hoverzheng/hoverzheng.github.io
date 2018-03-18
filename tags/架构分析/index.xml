@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>架构分析 on hoverzheng</title>
+    <link>https://hoverzheng.github.io/tags/%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/</link>
+    <description>Recent content in 架构分析 on hoverzheng</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>zg_hover@sina.com (hoverzheng)</managingEditor>
+    <webMaster>zg_hover@sina.com (hoverzheng)</webMaster>
+    <lastBuildDate>Sun, 18 Mar 2018 20:52:36 +0800</lastBuildDate>
+    
+	<atom:link href="https://hoverzheng.github.io/tags/%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Memcached架构分析</title>
+      <link>https://hoverzheng.github.io/post/technology-blog/architect/memcached%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/</link>
+      <pubDate>Sun, 18 Mar 2018 20:52:36 +0800</pubDate>
+      <author>zg_hover@sina.com (hoverzheng)</author>
+      <guid>https://hoverzheng.github.io/post/technology-blog/architect/memcached%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
