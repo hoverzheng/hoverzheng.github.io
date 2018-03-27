@@ -5,21 +5,24 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>共识算法</title>
-  <meta property="og:title" content="共识算法" />
-  <meta name="twitter:title" content="共识算法" />
+  <title>Raft共识算法1-Raft基础</title>
+  <meta property="og:title" content="Raft共识算法1-Raft基础" />
+  <meta name="twitter:title" content="Raft共识算法1-Raft基础" />
+  <meta name="description" content="一个Raft集群有多个服务节点，一般是5个，这样系统允许有两个服务节点不可用。在任何时候，服务节点都处于以下三个状态中的一个状态： leade">
+  <meta property="og:description" content="一个Raft集群有多个服务节点，一般是5个，这样系统允许有两个服务节点不可用。在任何时候，服务节点都处于以下三个状态中的一个状态： leade">
+  <meta name="twitter:description" content="一个Raft集群有多个服务节点，一般是5个，这样系统允许有两个服务节点不可用。在任何时候，服务节点都处于以下三个状态中的一个状态： leade">
   <meta name="author" content="hoverzheng"/>
   <link href='https://hoverzheng.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
   <meta property="og:image" content="https://hoverzheng.github.io/img/avatar-icon.png" />
   <meta name="twitter:image" content="https://hoverzheng.github.io/img/avatar-icon.png" />
   <meta name="twitter:card" content="summary" />
-  <meta property="og:url" content="https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/" />
+  <meta property="og:url" content="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%951-raft%E5%9F%BA%E7%A1%80/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="hoverzheng" />
 
   <meta name="generator" content="Hugo 0.37.1" />
-  <link rel="canonical" href="https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/" />
-  <link rel="alternate" href="https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/index.xml" type="application/rss+xml" title="hoverzheng">
+  <link rel="canonical" href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%951-raft%E5%9F%BA%E7%A1%80/" />
+  <link rel="alternate" href="https://hoverzheng.github.io/index.xml" type="application/rss+xml" title="hoverzheng">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -166,14 +169,40 @@
 
 
     
+  
+  
+  
+
+
+
+
+  
+
   <header class="header-section ">
+    
     <div class="intro-header no-img">
+      
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <div class="page-heading">
-              <h1>#共识算法</h1>
-              <hr class="small">
+            <div class="post-heading">
+              <h1>Raft共识算法1-Raft基础</h1>
+                
+                
+                  <span class="post-meta">
+  
+  
+  <i class="fa fa-calendar-o"></i>&nbsp;Posted on March 27, 2018
+  
+  
+  &nbsp;|&nbsp;
+  <i class="fa fa-clock-o"></i> 2 minutes (980 words)
+  
+  
+</span>
+
+
+                
             </div>
           </div>
         </div>
@@ -181,49 +210,47 @@
     </div>
   </header>
 
+
     
-  <div class="container" role="main">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        
-        <div class="posts-list">
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <p>一个Raft集群有多个服务节点，一般是5个，这样系统允许有两个服务节点不可用。在任何时候，服务节点都处于以下三个状态中的一个状态：</p>
+
+<ul>
+<li>leader(主)</li>
+<li>follower(更随者)</li>
+<li>candidate(选举者)</li>
+</ul>
+
+<p>在通常情况下，有一个确定的leader，其他节点都是follower。Follower是被动的，它自己不会发送请求，而是简单的回应leader和candidate的请求。leader处理所有的客户端请求(若客户端连接的是一个follower，follower会把请求转发给leader)。第三个状态是candidata，这个状态用来选举一个新的leader。图4说明了这些状态之间是如何转换的。转换将会在下面进行讨论。
+<img src="/img/raft_state_machine.png" /></p>
+
+<p>Raft把时间分成很多任意长的周期，如图5所示。每个周期都使用连续的整数进行标识。每个周期在开始选举时，每个周期从选举开始，其中一个或多个候选人尝试成为领导者，如第5.2节所述。如果候选者赢得了选举，那么它将在该周期其余时间作为领导者，为集群服务。有时候，可能将会导致投票的分裂，此时，该时间周期将会以没有领导者而结束。一个新的周期会马上开始。Raft协议确保每个时间周期只有一个leader。</p>
+
+<p>不同服务节点可以观察不同时间周期之间的转换，并且在某些情况下服务节点在整个时间周期内也不会观察到选举过程。在Raft中时间周期充当逻辑时钟，它们允许服务节点检测到历史信息，比如：一个过时的leader。每个服务节点都保存了一个当前的时间周期编号，随着时间的推移该编号也不断增加。当两个服务器节点通信时，会相互告知当前的周期。若一个服务节点的当前时间周期小于另一个服务节点的时间周期，则将其当前期限更新为更大的值。若一个candidate或leader发现它的周期已经过时，它会把状态立即转换成follower。若服务节点接收到一个过去的时间周期号发送的请求，它会拒绝该请求。</p>
+
+<p>Raft服务节点使用RPC进行通信，而基础的共识算法只需要两种类型的RPC。RequestVote RPC是由候选者在选举期间发起的（第5.2节），而AppendEntries RPC则由领导者发起来复制日志实体并提供一种形式的心跳（见5.3节）。第7节添加了第三个RPC，用于在服务器之间传输快照。 如果服务器没有收到响应，那么服务器将重试RPC，并且为了获得最佳性能，它们并行地发布RPC。</p>
+
+      </article>
+
+      
+        <ul class="pager blog-pager">
           
-            <article class="post-preview">
-              <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%951-raft%E5%9F%BA%E7%A1%80/">
-                <h2 class="post-title">Raft共识算法1-Raft基础</h2>
-
-                
-              </a>
-
-              <p class="post-meta">
-                Posted on March 27, 2018
-              </p>
-              <div class="post-entry">
-                
-                  一个Raft集群有多个服务节点，一般是5个，这样系统允许有两个服务节点不可用。在任何时候，服务节点都处于以下三个状态中的一个状态： leade
-                  <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%951-raft%E5%9F%BA%E7%A1%80/" class="post-read-more">[Read More]</a>
-                
-              </div>
-
-              
-                <span class="post-meta">
-                  
-                    #<a href="https://hoverzheng.github.io/tags/raft/">Raft</a>&nbsp;
-                  
-                    #<a href="https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/">共识算法</a>&nbsp;
-                  
-                    #<a href="https://hoverzheng.github.io/tags/blockchain/">blockchain</a>&nbsp;
-                  
-                </span>
-              
-
-            </article>
           
-        </div>
+        </ul>
+      
+
+
+      
         
-      </div>
+        
+      
+
     </div>
   </div>
+</div>
 
     <footer>
   <div class="container">
@@ -258,7 +285,7 @@
           
           <li>
             
-            <a href="https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/index.xml" title="RSS">
+            <a href="https://hoverzheng.github.io/index.xml" title="RSS">
             
               <span class="fa-stack fa-lg">
                 <i class="fa fa-circle fa-stack-2x"></i>
