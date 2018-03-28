@@ -212,11 +212,30 @@
 
 
     
-<div class="container" role="main">
-  <div class="row">
-    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-      <article role="main" class="blog-post">
+<div class="container" role="main" itemscope itemtype="http://schema.org/Article">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            
+            
+            
+<div>
+    <section id="datecount">
+        <h4 id="date"> Tue Mar 27, 2018</h4>
+    </section>
+    <h5 id="wc">1400 Words|Read in about 3 Min</h5>
+    <h5 id="tags">Tags: 
         
+        <a href="https://hoverzheng.github.iotags/raft/">Raft</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/">共识算法</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/blockchain/">blockchain</a> &nbsp;
+    </h5>
+</div>
+
+            
+            <article role="main" class="blog-post" itemprop="articleBody" id="content">
+                
 
 <h2 id="介绍">介绍</h2>
 
@@ -247,23 +266,78 @@
 
 <p>Raft服务节点使用RPC进行通信，而基础的共识算法只需要两种类型的RPC。Request Vote RPC是由候选者在选举期间发起的，而AppendEntries RPC则由领导者发起来复制日志实体并提供一种形式的心跳。另外还有第三个RPC请求，用于在服务器之间传输快照(在后面的章节讲解)。 如果服务器没有收到响应，那么服务节点将重新发送RPC请求，并且为了获得最佳性能，它们并行地发送RPC请求。</p>
 
-      </article>
+            </article>
 
-      
-        <ul class="pager blog-pager">
-          
-          
-        </ul>
-      
-
-
-      
+            <ul class="pager blog-pager">
+                
+                <li class="previous">
+                    <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A32--raft%E7%AE%97%E6%B3%95%E6%A6%82%E8%A7%88/" data-toggle="tooltip" data-placement="top" title="Raft算法详解2--Raft算法概览">&larr; Previous Post</a>
+                </li>
+                 
+            </ul>
+            
+            <div>
+                 
+                <h2>See Also</h2>
+                <ul>
+                    
+                    <li><a href="/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A32--raft%E7%AE%97%E6%B3%95%E6%A6%82%E8%A7%88/">Raft算法详解2--Raft算法概览</a></li>
+                    
+                </ul>
+                
+            </div>
+            
+            
+            
+            
+<div>
+    <section id="datecount">
+        <h4 id="date"> Tue Mar 27, 2018</h4>
+    </section>
+    <h5 id="wc">1400 Words|Read in about 3 Min</h5>
+    <h5 id="tags">Tags: 
         
+        <a href="https://hoverzheng.github.iotags/raft/">Raft</a> &nbsp;
         
-      
+        <a href="https://hoverzheng.github.iotags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/">共识算法</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/blockchain/">blockchain</a> &nbsp;
+    </h5>
+</div>
 
+            
+            </div>
+            
+            
+                
+                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<aside id=comments>
+    <div>
+        <h2> Comments </h2>
     </div>
-  </div>
+    <div id="container"></div>
+    <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+    
+    <script src="https://res.cloudinary.com/jimmysong/raw/upload/rootsongjc-hugo/gitment.browser.js"></script>
+    <script>
+        var gitment = new Gitment({
+            owner: 'rootsongjc', 
+            repo: 'rootsongjc.github.io', 
+            oauth: {
+                client_id: '93a0df08e0f93ff0c8a3',
+                client_secret: '89f20e962982401489bc9339dea437161ea44c68',
+            },
+        })
+        gitment.render('container')
+    </script>
+</aside>
+</div>
+
+                
+            
+        </div>
+    </div>
+    </section>
 </div>
 
     <footer>
