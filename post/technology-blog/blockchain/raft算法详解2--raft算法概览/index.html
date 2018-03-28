@@ -5,9 +5,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>Raft算法详解2--Raft算法概览</title>
-  <meta property="og:title" content="Raft算法详解2--Raft算法概览" />
-  <meta name="twitter:title" content="Raft算法详解2--Raft算法概览" />
+  <title>Raft算法详解2--Raft算法概要</title>
+  <meta property="og:title" content="Raft算法详解2--Raft算法概要" />
+  <meta name="twitter:title" content="Raft算法详解2--Raft算法概要" />
   <meta name="description" content="Raft算法介绍 Raft是一个共识算法，用来管理复制日志(replicated log)，关于复制日志后面有讲述。本文以简明形式总结了该算法，">
   <meta property="og:description" content="Raft算法介绍 Raft是一个共识算法，用来管理复制日志(replicated log)，关于复制日志后面有讲述。本文以简明形式总结了该算法，">
   <meta name="twitter:description" content="Raft算法介绍 Raft是一个共识算法，用来管理复制日志(replicated log)，关于复制日志后面有讲述。本文以简明形式总结了该算法，">
@@ -186,7 +186,7 @@
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <div class="post-heading">
-              <h1>Raft算法详解2--Raft算法概览</h1>
+              <h1>Raft算法详解2--Raft算法概要</h1>
                 
                 
                   <span class="post-meta">
@@ -196,7 +196,7 @@
   
   
   &nbsp;|&nbsp;
-  <i class="fa fa-clock-o"></i> 6 minutes (2791 words)
+  <i class="fa fa-clock-o"></i> 6 minutes (2758 words)
   
   
 </span>
@@ -295,11 +295,11 @@
 <li>状态机的安全性(State Machine Safety)</li>
 </ul>
 
-<p>&emsp;如果服务器在其状态机的给定索引处应用了日志条目，则其他服务器将不会为同一索引应用不同的日志条目。</p>
+<p>&emsp;如果服务节点在其状态机的给定索引处应用了日志记录，则其他服务节点将能使用具有相同索引号的不同的日志记录。</p>
 
-<h2 id="raft算法概览">Raft算法概览</h2>
+<h2 id="raft算法概要">Raft算法概要</h2>
 
-<p>Raft共识算法的精简摘要（不包括成员资格变更和日志压缩）。 左上方框中的服务器行为被描述为独立和重复触发的一组规则。 诸如§5.2的节号表示讨论特定特征的位置。 正式的规范[31]更准确地描述了算法。</p>
+<p>下面是Raft共识算法的概括(不包括节点权限变更和日志压缩)。服务节点的行为被描述为独立和重复触发的一组规则。</p>
 
 <h3 id="状态-state">状态(State)</h3>
 
@@ -308,35 +308,52 @@
 <p>这些状态会在响应RPC之前进行更新，并持久化在服务节点。</p>
 
 <ul>
-<li>currentTerm
-服务节点已经看到的最新的周期(初次启动时初始化为0，后面不断增加)。</li>
-<li>votedFor
-candidateId在当前周期内收到的投票（如果没有，则为null）</li>
-<li>log[]
-日志实体;每个实体包含状态机的命令，以及leader接收到日志时的周期(第一个索引为1)</li>
+<li>currentTerm</li>
 </ul>
+
+<p>&emsp;服务节点已经观察到的最新的周期(初次启动时初始化为0，后面不断增加)。</p>
+
+<ul>
+<li>votedFor</li>
+</ul>
+
+<p>&emsp;candidateId在当前周期内收到的投票（如果没有，则为null）</p>
+
+<ul>
+<li>log[]</li>
+</ul>
+
+<p>日志记录;每个记录包含状态机的命令，以及leader接收到日志实体时的周期(第一个索引为1)</p>
 
 <h4 id="2-所有服务节点上的易失性状态">2. 所有服务节点上的易失性状态</h4>
 
 <ul>
-<li>commitIndex
-已知提交的最新日志实体的索引(初始化为0，单调递增)</li>
-<li>lastApplied
-应用于状态机的最高日志实体的索引(初始化为0，单调递增)</li>
+<li>commitIndex</li>
 </ul>
+
+<p>已知提交的最新日志实体的索引(初始化为0，单调递增)</p>
+
+<ul>
+<li>lastApplied</li>
+</ul>
+
+<p>应用于状态机的最高日志实体的索引(初始化为0，单调递增)</p>
 
 <h4 id="3-leader上的临时状态">3. leader上的临时状态</h4>
 
 <p>这些状态会在选举后被重新初始化。</p>
 
 <ul>
-<li><p>nextIndex[]
-对于每个服务节点，发送到该服务节点的下一个日志实体的索引(初始化为leader
-最后的日志索引+ 1)</p></li>
-
-<li><p>matchIndex[]
-对于每个服务节点，已知在服务节点上复制的最高日志实体的索引(初始化为0，单调递增)</p></li>
+<li>nextIndex[]</li>
 </ul>
+
+<p>对于每个服务节点，发送到该服务节点的下一个日志条目的索引(初始化为leader的最后日志索引+1)</p>
+
+<ul>
+<li>matchIndex[]</li>
+</ul>
+
+<p>对于每个服务节点，已知在服务节点上复制的最高日志实体的索引(初始化为0，单调递增)</p>
 
 <h3 id="追加日志记录请求-appendentries-rpc">追加日志记录请求 (AppendEntries RPC)</h3>
 
@@ -345,86 +362,137 @@ candidateId在当前周期内收到的投票（如果没有，则为null）</li>
 <h4 id="1-参数-arguments">1.参数(Arguments)</h4>
 
 <ul>
-<li>term
-leader的时间周期</li>
-<li>leaderId
-follower可以重定向客户端</li>
-<li>prevLogIndex
-日志实体在新实体之前的索引值</li>
-<li>prevLogTerm
-prevLogIndex周期的日志实体</li>
-<li>entries[]
-需要存储的日志记录。(若是心跳消息则为空；可以发送多个用于提高效率)</li>
-<li>leaderCommit
-leader的commitIndex</li>
+<li>term</li>
 </ul>
+
+<p>leader的时间周期</p>
+
+<ul>
+<li>leaderId</li>
+</ul>
+
+<p>follower可以重定向客户端</p>
+
+<ul>
+<li>prevLogIndex</li>
+</ul>
+
+<p>日志实体在新实体之前的索引值</p>
+
+<ul>
+<li>prevLogTerm</li>
+</ul>
+
+<p>prevLogIndex周期的日志实体</p>
+
+<ul>
+<li>entries[]</li>
+</ul>
+
+<p>需要存储的日志记录。(若是心跳消息则为空；可以发送多个用于提高效率)</p>
+
+<ul>
+<li>leaderCommit</li>
+</ul>
+
+<p>leader的commitIndex</p>
 
 <h4 id="2-结果-results">2.结果(Results)</h4>
 
 <ul>
-<li>term
-当前周期，用户leader的自我更新</li>
-<li>success
-如果follower包含与prevLogIndex和prevLogTerm匹配的记录，则返回true</li>
+<li>term</li>
 </ul>
+
+<p>当前周期，用于leader的自我更新</p>
+
+<ul>
+<li>success</li>
+</ul>
+
+<p>如果follower包含与prevLogIndex和prevLogTerm匹配的记录，则返回true</p>
 
 <h4 id="3-接收者的实现-receiver-implementation">3.接收者的实现(Receiver implementation)</h4>
 
-<p>(1) 若term &lt; currentTerm 则返回false
-(2) 如果日志中不包含prevLogIndex中与prevLogTerm相匹配的记录，则回复false
-(3) 如果现有记录与新记录(相同索引但时间周期不同)冲突，删除现有记录和其后的所有记录。
-(4) 添加日志记录中尚未包含的新记录
-(5) 如果leaderCommit&gt; commitIndex，则设置commitIndex = min(leaderCommit，最后一个新日志记录的索引)</p>
+<p>(1) 若term &lt; currentTerm 则返回false</p>
+
+<p>(2) 如果日志中不包含prevLogIndex中与prevLogTerm相匹配的记录，则回复false</p>
+
+<p>(3) 如果现有记录与新记录(相同索引但时间周期不同)冲突，删除现有记录和其后的所有记录。</p>
+
+<p>(4) 添加日志记录中尚未包含的新记录</p>
+
+<p>(5) 如果leaderCommit&gt; commitIndex，则设置commitIndex = min(leaderCommit，最后一个新日志记录的索引)</p>
 
 <h3 id="投票请求-requestvote-rpc">投票请求(RequestVote RPC)</h3>
 
 <h4 id="参数-arguments">参数(Arguments)</h4>
 
 <ul>
-<li>term
-candidate’s 的时间周期</li>
-<li>candidateId
-candidate请求投票</li>
-<li>lastLogIndex
-candidate最后一个日志记录的索引</li>
-<li>lastLogTerm
-candidate最后一个日志记录的时间周期</li>
+<li>term</li>
 </ul>
+
+<p>candidate 的时间周期</p>
+
+<ul>
+<li>candidateId</li>
+</ul>
+
+<p>candidate请求投票</p>
+
+<ul>
+<li>lastLogIndex</li>
+</ul>
+
+<p>candidate最后一个日志记录的索引</p>
+
+<ul>
+<li>lastLogTerm</li>
+</ul>
+
+<p>candidate最后一个日志记录的时间周期</p>
 
 <h4 id="结果-results">结果(Results)</h4>
 
 <ul>
-<li>term
-当前周期，用于candidate更新它自己</li>
-<li>voteGranted
-若值为true，表示candidate收到了投票</li>
+<li>term</li>
 </ul>
+
+<p>当前周期，用于candidate更新它自己</p>
+
+<ul>
+<li>voteGranted</li>
+</ul>
+
+<p>若值为true，表示candidate收到了投票</p>
 
 <h4 id="接收者的实现-receiver-implementation">接收者的实现(Receiver implementation)</h4>
 
-<p>(1) 若term &lt; currentTerm返回false
-(2) 如果votedFor为null或candidateId，并且candidate的日志至少与接收者的日志一样最新，则授予投票</p>
+<p>(1) 若term &lt; currentTerm返回false</p>
+
+<p>(2) 如果votedFor为null或candidateId，并且candidate的日志至少与接收者的日志一样最新，则授予投票</p>
 
 <h3 id="服务节点的规则">服务节点的规则</h3>
 
 <h4 id="all-servers">All Servers</h4>
 
 <ul>
-<li>如果commitIndex&gt; lastApplied：增加lastApplied，则将log[lastApplied]应用于状态机</li>
-<li>如果RPC请求或响应包含T&gt; currentTerm：set currentTerm = T，则转换为follower</li>
+<li><p>如果commitIndex&gt; lastApplied：增加lastApplied，则将log[lastApplied]应用于状态机</p></li>
+
+<li><p>如果RPC请求或响应包含T&gt; currentTerm：set currentTerm = T，则转换为follower</p></li>
 </ul>
 
 <h4 id="followers">Followers</h4>
 
 <ul>
-<li>回应candidate和leader的RPC请求</li>
-<li>如果超时没有收到当前leader的AppendEntries RPC请求或给candidate的投票请求：则转换为candidate状态</li>
+<li><p>回应candidate和leader的RPC请求</p></li>
+
+<li><p>如果超时没有收到当前leader的AppendEntries RPC请求或给candidate的投票请求：则转换为candidate状态</p></li>
 </ul>
 
 <h4 id="candidates">Candidates</h4>
 
 <ul>
-<li>转换为Candidates后，开始选举
+<li><p>转换为Candidates后，开始选举</p>
 
 <ul>
 <li>递增currentTerm</li>
@@ -432,23 +500,29 @@ candidate最后一个日志记录的时间周期</li>
 <li>重置选举计时器</li>
 <li>发送RequestVote RPC到所有其他服务节点</li>
 </ul></li>
-<li>如果从大多数服务器收到投票则：变成leader</li>
-<li>如果从新的leader收到AppendEntries RPC请求则：变成follower</li>
-<li>如果选举超时则：开始新的选举</li>
+
+<li><p>如果从大多数服务器收到投票则：变成leader</p></li>
+
+<li><p>如果从新的leader收到AppendEntries RPC请求则：变成follower</p></li>
+
+<li><p>如果选举超时则：开始新的选举</p></li>
 </ul>
 
 <h4 id="leaders">Leaders</h4>
 
 <ul>
-<li>一旦选举：发送初始emptyAppendEntries RPC（心跳）到每个服务器; 在空闲期间重复以防止选举超时</li>
-<li>如果从客户端接收到的命令：将条目附加到本地日志中，则在应用到状态机</li>
-<li>如果追随者的最后日志索引≥nextIndex：将appendEntries RPC发送到从nextIndex开始的日志条目
+<li><p>一旦选举：发送初始emptyAppendEntries RPC（心跳）到每个服务器; 在空闲期间重复以防止选举超时</p></li>
+
+<li><p>如果从客户端接收到的命令：将条目附加到本地日志中，则在应用到状态机</p></li>
+
+<li><p>如果追随者的最后日志索引≥nextIndex：将appendEntries RPC发送到从nextIndex开始的日志条目</p>
 
 <ul>
 <li>如果成功：为follower更新nextIndex和matchIndex<br /></li>
 <li>If AppendEntries由于日志不一致而失败：递减nextIndex并重试</li>
 </ul></li>
-<li>如果存在N，使得N&gt; commitIndex，则大部分matchIndex [i]≥N，并且log [N] .term == currentTerm：set commitIndex = N。</li>
+
+<li><p>如果存在N，使得N&gt; commitIndex，则大部分matchIndex [i]≥N，并且log [N] .term == currentTerm：set commitIndex = N。</p></li>
 </ul>
 
 <h2 id="参考资料">参考资料</h2>
