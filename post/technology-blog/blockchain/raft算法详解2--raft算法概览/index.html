@@ -8,9 +8,9 @@
   <title>Raft算法详解2--Raft算法概览</title>
   <meta property="og:title" content="Raft算法详解2--Raft算法概览" />
   <meta name="twitter:title" content="Raft算法详解2--Raft算法概览" />
-  <meta name="description" content="Raft算法介绍 Raft是一个算法，用来管理前面描述的重放日志(replicated log)。图2以简明形式总结了算法，以供参考。图3列出了">
-  <meta property="og:description" content="Raft算法介绍 Raft是一个算法，用来管理前面描述的重放日志(replicated log)。图2以简明形式总结了算法，以供参考。图3列出了">
-  <meta name="twitter:description" content="Raft算法介绍 Raft是一个算法，用来管理前面描述的重放日志(replicated log)。图2以简明形式总结了算法，以供参考。图3列出了">
+  <meta name="description" content="Raft算法介绍 Raft是一个共识算法，用来管理复制日志(replicated log)，关于复制日志后面有讲述。本文以简明形式总结了该算法，">
+  <meta property="og:description" content="Raft算法介绍 Raft是一个共识算法，用来管理复制日志(replicated log)，关于复制日志后面有讲述。本文以简明形式总结了该算法，">
+  <meta name="twitter:description" content="Raft算法介绍 Raft是一个共识算法，用来管理复制日志(replicated log)，关于复制日志后面有讲述。本文以简明形式总结了该算法，">
   <meta name="author" content="hoverzheng"/>
   <link href='https://hoverzheng.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
   <meta property="og:image" content="https://hoverzheng.github.io/img/avatar-icon.png" />
@@ -196,7 +196,7 @@
   
   
   &nbsp;|&nbsp;
-  <i class="fa fa-clock-o"></i> 5 minutes (2404 words)
+  <i class="fa fa-clock-o"></i> 6 minutes (2563 words)
   
   
 </span>
@@ -222,7 +222,7 @@
     <section id="datecount">
         <h4 id="date"> Tue Mar 27, 2018</h4>
     </section>
-    <h5 id="wc">2500 Words|Read in about 5 Min</h5>
+    <h5 id="wc">2600 Words|Read in about 6 Min</h5>
     <h5 id="tags">Tags: 
         
         <a href="https://hoverzheng.github.iotags/raft/">Raft</a> &nbsp;
@@ -239,15 +239,25 @@
 
 <h3 id="raft算法介绍">Raft算法介绍</h3>
 
-<p>Raft是一个算法，用来管理前面描述的重放日志(replicated log)。图2以简明形式总结了算法，以供参考。图3列出了该算法的关键属性。这些图的内容将在本节的其余部分分段进行讨论。
-Raft实现了共识算法，它首先选举一个唯一的leader，并赋予该leader完全的管理重放日志的职责。该leader从客户端接收log实体，将它们复制到其他服务器节点上，并告诉服务器何时可以安全地将日志实体应用到其状态机。有了leader后，就简化了重放日志的管理。例如：leader可以决定把新的实体放到日志中，而不询问其他服务节点，数据流以简单的形式从leader流向其他服务器节点。leader可能会奔溃或与其他服务节点断开连接，此时会选举出新的leader。</p>
+<p>Raft是一个共识算法，用来管理复制日志(replicated log)，关于复制日志后面有讲述。本文以简明形式总结了该算法，还列出了该算法的关键属性。本文是对Raft算法的一个概述，还会有更加详细的章节专门介绍该算法的细节。</p>
 
-<p>在有leader的前提下，Raft把共识问题分解成独立的子问题，这些问题将在下面的章节进行讨论：</p>
+<p>Raft实现了共识算法，它首先选举一个唯一的leader，并赋予该leader完全的管理复制志的职责。该leader从客户端接收日志记录，将它们复制到其他服务节点上，并告诉服务节点何时可以安全地将日志记录应用到其状态机(state machine)。有了leader后，就简化了复制日志的管理。例如：leader可以决定把新的记录放到日志中，而不询问其他服务节点，数据流以简单的形式从leader流向其他服务节点。leader可能会终止或与其他服务节点断开连接，此时会选举出新的leader。</p>
+
+<p>在有leader的前提下，Raft把共识问题分解成独立的子问题，这些问题将在下面的章节进行讨论：
+* 选主(Leader election): 当现有的leader终止时，必须要选出一个新的leader。
+* 日志复制(Log replication): leader必须接受客户端的日志记录，把它复制到整个集群，并强制使其他的日志和它自己的保持一致。
+* 安全性(Safety): Raft关键的安全属性是状态机的安全属性，如图3所示。如果任何服务节点已经在它的状态机上使用了一个特定的日志实体，那么其他服务节点不能在相同的日志索引上使用不同的指令。</p>
+
+<h4 id="raft算法的特性">Raft算法的特性</h4>
+
+<p>Raft保证这些属性的每一个在任何时候都是true。后面会有文章对这些属性进行详细讨论。</p>
 
 <ul>
-<li>选主(Leader election): 当现有的leader失败时，必须要选出一个新的leader。</li>
-<li>日志复制(Log replication): leader必须接受客户端的日志实体，并把它复制到整个集群，并强制使其他的日志和它自己的保持一致。</li>
-<li>安全性(Safety): Raft关键的安全属性是状态机的安全属性，如图3所示。如果任何服务节点已经在它的状态机上使用了一个特定的日志实体，那么其他服务节点不能在相同的日志索引上使用不同的指令。</li>
+<li><p>选举安全(Election Safety)
+在给定的周期内，最多只有一个leader被选举出来。</p></li>
+
+<li><p>leader只追加日志(Leader Append-Only)
+leader从来都不会覆盖或删除它的日志记录。它仅追加新的日志记录。</p></li>
 </ul>
 
 <h3 id="raft算法概览">Raft算法概览</h3>
@@ -438,7 +448,7 @@ candidate最后一个日志记录的时间周期</li>
     <section id="datecount">
         <h4 id="date"> Tue Mar 27, 2018</h4>
     </section>
-    <h5 id="wc">2500 Words|Read in about 5 Min</h5>
+    <h5 id="wc">2600 Words|Read in about 6 Min</h5>
     <h5 id="tags">Tags: 
         
         <a href="https://hoverzheng.github.iotags/raft/">Raft</a> &nbsp;
