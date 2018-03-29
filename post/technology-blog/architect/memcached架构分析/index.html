@@ -211,7 +211,7 @@
   
   
   &nbsp;|&nbsp;
-  <i class="fa fa-clock-o"></i> 5 minutes (2092 words)
+  <i class="fa fa-clock-o"></i> 5 minutes (2091 words)
   
   
 </span>
@@ -297,9 +297,12 @@ memcached系统是利用libevent事件驱动库实现的一个多线程K/V缓存
 
 <h4 id="worker线程初始化">worker线程初始化</h4>
 
-<p>worker线程的初始化完成的工作如下：
-* 为管道的读fd:notify_receive_fd，注册读事件监听函数thread_libevent_process
-该函数会阻塞在管道的notify_receive_fd描述符上进行读取。</p>
+<p>worker线程的初始化完成的工作如下：</p>
+
+<ul>
+<li>为管道的读fd:notify_receive_fd，注册读事件监听函数thread_libevent_process
+该函数会阻塞在管道的notify_receive_fd描述符上进行读取。</li>
+</ul>
 
 <h3 id="事件处理">事件处理</h3>
 
