@@ -19,7 +19,7 @@
       <pubDate>Sun, 18 Mar 2018 20:52:36 +0800</pubDate>
       <author>zg_hover@sina.com (hoverzheng)</author>
       <guid>https://hoverzheng.github.io/post/technology-blog/architect/memcached%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/</guid>
-      <description>介绍 本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。 该模式通</description>
+      <description>介绍 本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。 该架构通</description>
     </item>
     
   </channel>

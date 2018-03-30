@@ -8,9 +8,9 @@
   <title>Memcached架构分析</title>
   <meta property="og:title" content="Memcached架构分析" />
   <meta name="twitter:title" content="Memcached架构分析" />
-  <meta name="description" content="介绍 本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。 该模式通">
-  <meta property="og:description" content="介绍 本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。 该模式通">
-  <meta name="twitter:description" content="介绍 本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。 该模式通">
+  <meta name="description" content="介绍 本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。 该架构通">
+  <meta property="og:description" content="介绍 本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。 该架构通">
+  <meta name="twitter:description" content="介绍 本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。 该架构通">
   <meta name="author" content="hoverzheng"/>
   <link href='https://hoverzheng.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
   <meta property="og:image" content="https://hoverzheng.github.io/img/avatar-icon.png" />
@@ -211,7 +211,7 @@
   
   
   &nbsp;|&nbsp;
-  <i class="fa fa-clock-o"></i> 5 minutes (2091 words)
+  <i class="fa fa-clock-o"></i> 5 minutes (2104 words)
   
   
 </span>
@@ -237,7 +237,7 @@
     <section id="datecount">
         <h4 id="date"> Sun Mar 18, 2018</h4>
     </section>
-    <h5 id="wc">2100 Words|Read in about 5 Min</h5>
+    <h5 id="wc">2200 Words|Read in about 5 Min</h5>
     <h5 id="tags">Tags: 
         
         <a href="https://hoverzheng.github.iotags/memcached/">memcached</a> &nbsp;
@@ -253,7 +253,7 @@
 <h2 id="介绍">介绍</h2>
 
 <p>本文通过阅读memcached的源代码，剖析了memcached的主流程处理的架构设计。包括主流程的线程模型和网络事件处理机制。
-该模式通过一个主线程来分发客户端的连接任务，worker接管连接后负责处理客户端的各种请求。
+该架构通过一个主线程来分发客户端的连接任务，worker接管连接后负责处理客户端的各种请求。
 注：本文是我在2013年写的<a href="http://blog.chinaunix.net/uid-20498361-id-3838477.html">一篇博客</a>整理而写成的。</p>
 
 <h2 id="memcached简介">memcached简介</h2>
@@ -273,7 +273,7 @@ memcached系统是利用libevent事件驱动库实现的一个多线程K/V缓存
 <p>memcached的内部实现的架构，如下图所示：
 <img src="/post/technology-blog/architect/img/memcached_archtect.png" alt="说明" /></p>
 
-<p>主线程(main thread)会和每个worker线程都建立一个管道(pipe)，当client连接memcached时，会先把连接请求发送给主线程，当主线程接收到连接请求时，会选择一个管道，也就是选择了一个worker thread发送一个字符: ‘c’，并唤醒该worker线程，worker线程从事件队列中取出&rsquo;c&rsquo;，并接受客户端的创建请求，与client建立连接，最后进入driver_machine函数，处理client端的发送命令和各种连接异常的事件。</p>
+<p>主线程(main thread)会和每个worker线程都建立一个管道(pipe)，当client连接memcached时，会先把连接请求发送给主线程，并和主线程完成连接的建立，让后主线程会选择一个管道，也就是选择了一个worker thread发送一个字符: ‘c’，并把创建一个新的连接实体放到连接队列中，此时阻塞在管道读区端的worker线程被唤醒，worker线程从连接队列中取出连接实体，并对完成连接的socket注册读事件处理函数，最后进入命令处理流程来处理client端的发送命令和各种连接异常的事件。</p>
 
 <h3 id="主线程">主线程</h3>
 
@@ -365,7 +365,7 @@ memcached系统是利用libevent事件驱动库实现的一个多线程K/V缓存
     <section id="datecount">
         <h4 id="date"> Sun Mar 18, 2018</h4>
     </section>
-    <h5 id="wc">2100 Words|Read in about 5 Min</h5>
+    <h5 id="wc">2200 Words|Read in about 5 Min</h5>
     <h5 id="tags">Tags: 
         
         <a href="https://hoverzheng.github.iotags/memcached/">memcached</a> &nbsp;
