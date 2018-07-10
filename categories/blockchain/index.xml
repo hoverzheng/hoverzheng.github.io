@@ -8,10 +8,19 @@
     <language>zh-cn</language>
     <managingEditor>zg_hover@sina.com (hoverzheng)</managingEditor>
     <webMaster>zg_hover@sina.com (hoverzheng)</webMaster>
-    <lastBuildDate>Tue, 27 Mar 2018 06:58:53 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 16 Apr 2018 06:40:36 +0640</lastBuildDate>
     
 	<atom:link href="https://hoverzheng.github.io/categories/blockchain/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Raft算法详解3—选主(Leader election)</title>
+      <link>https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A33--%E9%80%89%E4%B8%BB/</link>
+      <pubDate>Mon, 16 Apr 2018 06:40:36 +0640</pubDate>
+      <author>zg_hover@sina.com (hoverzheng)</author>
+      <guid>https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A33--%E9%80%89%E4%B8%BB/</guid>
+      <description>Raft算法详解&amp;ndash;选主(Leader election) 概述 ​ 本文详细介绍了Raft算法的选主过程，包括：选主的流程，选主过程中各个节点的角色转换</description>
+    </item>
     
     <item>
       <title>BlockChain</title>

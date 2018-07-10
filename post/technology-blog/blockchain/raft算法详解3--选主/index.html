@@ -5,21 +5,24 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>Blockchain</title>
-  <meta property="og:title" content="Blockchain" />
-  <meta name="twitter:title" content="Blockchain" />
+  <title>Raft算法详解3—选主(Leader election)</title>
+  <meta property="og:title" content="Raft算法详解3—选主(Leader election)" />
+  <meta name="twitter:title" content="Raft算法详解3—选主(Leader election)" />
+  <meta name="description" content="Raft算法详解&ndash;选主(Leader election) 概述 ​ 本文详细介绍了Raft算法的选主过程，包括：选主的流程，选主过程中各个节点的角色转换">
+  <meta property="og:description" content="Raft算法详解&ndash;选主(Leader election) 概述 ​ 本文详细介绍了Raft算法的选主过程，包括：选主的流程，选主过程中各个节点的角色转换">
+  <meta name="twitter:description" content="Raft算法详解&ndash;选主(Leader election) 概述 ​ 本文详细介绍了Raft算法的选主过程，包括：选主的流程，选主过程中各个节点的角色转换">
   <meta name="author" content="hoverzheng"/>
   <link href='https://hoverzheng.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
   <meta property="og:image" content="https://hoverzheng.github.io/img/avatar-icon.png" />
   <meta name="twitter:image" content="https://hoverzheng.github.io/img/avatar-icon.png" />
   <meta name="twitter:card" content="summary" />
-  <meta property="og:url" content="https://hoverzheng.github.io/tags/blockchain/" />
+  <meta property="og:url" content="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A33--%E9%80%89%E4%B8%BB/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="hoverzheng" />
 
   <meta name="generator" content="Hugo 0.38.2" />
-  <link rel="canonical" href="https://hoverzheng.github.io/tags/blockchain/" />
-  <link rel="alternate" href="https://hoverzheng.github.io/tags/blockchain/index.xml" type="application/rss+xml" title="hoverzheng">
+  <link rel="canonical" href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A33--%E9%80%89%E4%B8%BB/" />
+  <link rel="alternate" href="https://hoverzheng.github.io/index.xml" type="application/rss+xml" title="hoverzheng">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -184,14 +187,40 @@
 
 
     
+  
+  
+  
+
+
+
+
+  
+
   <header class="header-section ">
+    
     <div class="intro-header no-img">
+      
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <div class="page-heading">
-              <h1>#Blockchain</h1>
-              <hr class="small">
+            <div class="post-heading">
+              <h1>Raft算法详解3—选主(Leader election)</h1>
+                
+                
+                  <span class="post-meta">
+  
+  
+  <i class="fa fa-calendar-o"></i>&nbsp;Posted on April 16, 2018
+  
+  
+  &nbsp;|&nbsp;
+  <i class="fa fa-clock-o"></i> 4 minutes (1546 words)
+  
+  
+</span>
+
+
+                
             </div>
           </div>
         </div>
@@ -199,111 +228,148 @@
     </div>
   </header>
 
+
     
-  <div class="container" role="main">
+<div class="container" role="main" itemscope itemtype="http://schema.org/Article">
     <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            
+            
+            
+<div>
+    <section id="datecount">
+        <h4 id="date"> Mon Apr 16, 2018</h4>
+    </section>
+    <h5 id="wc">1600 Words|Read in about 4 Min</h5>
+    <h5 id="tags">Tags: 
         
-        <div class="posts-list">
-          
-            <article class="post-preview">
-              <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A33--%E9%80%89%E4%B8%BB/">
-                <h2 class="post-title">Raft算法详解3—选主(Leader election)</h2>
+        <a href="https://hoverzheng.github.iotags/raft/">Raft</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/">共识算法</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/blockchain/">blockchain</a> &nbsp;
+    </h5>
+</div>
 
+            
+            <article role="main" class="blog-post" itemprop="articleBody" id="content">
                 
-              </a>
 
-              <p class="post-meta">
-                Posted on April 16, 2018
-              </p>
-              <div class="post-entry">
-                
-                  Raft算法详解&ndash;选主(Leader election) 概述 ​ 本文详细介绍了Raft算法的选主过程，包括：选主的流程，选主过程中各个节点的角色转换
-                  <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A33--%E9%80%89%E4%B8%BB/" class="post-read-more">[Read More]</a>
-                
-              </div>
+<h2 id="raft算法详解-选主-leader-election">Raft算法详解&ndash;选主(Leader election)</h2>
 
-              
-                <span class="post-meta">
-                  
-                    #<a href="https://hoverzheng.github.io/tags/raft/">Raft</a>&nbsp;
-                  
-                    #<a href="https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/">共识算法</a>&nbsp;
-                  
-                    #<a href="https://hoverzheng.github.io/tags/blockchain/">blockchain</a>&nbsp;
-                  
-                </span>
-              
+<h3 id="概述">概述</h3>
+
+<p>​   本文详细介绍了Raft算法的选主过程，包括：选主的流程，选主过程中各个节点的角色转换和消息发送机制。通过本文的学习，可以掌握Raft算法选主机制。</p>
+
+<h3 id="术语说明">术语说明</h3>
+
+<ul>
+<li>Leader election</li>
+</ul>
+
+<p>共识算法中的选举领导者的过程。</p>
+
+<ul>
+<li>Follower</li>
+</ul>
+
+<p>跟随者。处于该角色的节点不参与选举过程。</p>
+
+<ul>
+<li>Candidate</li>
+</ul>
+
+<p>选举者。处于该角色的节点参与选举过程，可以为某个Leader投票。</p>
+
+<ul>
+<li>Leader</li>
+</ul>
+
+<p>领导者。处于该角色的节点管理整个集群。</p>
+
+<ul>
+<li>AppendEntries RPC</li>
+</ul>
+
+<p>RPC消息，由领导者发送，用来追加log记录，该请求也用来作为心跳消息。</p>
+
+<ul>
+<li>Request-Vote RPC</li>
+</ul>
+
+<p>RFC消息，投票请求，由Candidate发送。</p>
+
+<h3 id="raft算法的选主过程详解">Raft算法的选主过程详解</h3>
+
+<p>​   Raft使用心跳机制来触发选主(Leader election)过程。当服务节点启动时，它们的角色是follower(跟随者)。服务节点将会一直保持follower的状态，直到接收到来自某个Leader(领导者)或candidate(选举者)的RPC请求。为了保持Leader服务节点的权限，Leader会周期性的发送心跳消息(内容是AppendEntries RPC请求，该请求不包含log内容)给所有的follower。如果一个follower在一个时间周期内没有收到任何通信消息，称为选举超时，那么它认为没有有效的Leader并开始选举选择新的Leader。</p>
+
+<p>​   为了发起选举，Follower会递增当前时间周期，并转换到candidate状态。然后，它会开始为它自己投票，并且并行地向集群中其他的所有服务节点发送RequestVote RPC请求。该candidate会继续保持在这个状态中，直到发生了以下三件事之一：</p>
+
+<ul>
+<li>它赢得了选举</li>
+<li>集群中另一个节点赢得了选举</li>
+<li>该时间周期内没有任何节点赢得选举(超时)</li>
+</ul>
+
+<p>这些结果将会在下面的章节中进行讨论。</p>
+
+<p>​   如果一个Candidate在同一时间周期内从整个群集中的大多数服务节点收到投票，则它赢得本次选举。在给定的时间周期内每个服务节点最多为一名候选人投票，投票生效的方式是：先来先得(注意：5.4增加了一个额外的投票限制)。这个主要的规则确保在一个特定的时间周期内最多只有一个Candidate能够赢得选举(这是选举的安全属性)。 一旦Candidate赢得选举，它就成为Leader。 然后它将心跳消息发送给所有其它服务节点，从而建立其权限并阻止新的选举。</p>
+
+<p>​   在等待投票结果时，Candidate可能会从另一个声称是Leader的服务节点收到AppendEntries RPC。 如果领导者的任期（包含在其RPC中）至少与Candidate的当前时间周期一样大，那么Candidate将该Leader认为是合法的，并恢复到Follower状态。 如果RPC消息中包含的时间周期小于Candidate的当前时间周期，则Candidate拒绝该RPC请求并继续处于选举状态。</p>
+
+<p>​   第三种可能的结果是，Candidate既不会赢得选举，也不会输掉选举：如果很多Follower同时成为Candidate，投票可能会分裂，这样就没有Candidate能获得多数投票。当发生这种情况时，每个Candidate都会超时，并通过增加时间周期的方式来启动新的选举，并发起另一轮的Request-Vote RPC请求。 但是，如果没有额外措施，分裂的投票可能会无限期地重复。</p>
+
+<p>​   Raft使用随机选举超时来确保分裂选票很少发生，或即使发生也能迅速解决。 首先，为了防止分裂投票，选举超时的时间间隔会从固定的时间间隔（例如150-300ms）中随机选择。 这样扩展了服务器，使得在大多数情况下只有一个服务节点会超时;它赢得选举，并在其它所有服务节点超时之前发送心跳。同样的机制用于处理分裂投票。 每个Candidate在选举开始时重新设置随机选举超时时间，并在开始下一次选举前等待超时。这样减少了新选举中再次分裂投票的可能性。</p>
 
             </article>
-          
-            <article class="post-preview">
-              <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%951-raft%E5%9F%BA%E7%A1%80/">
-                <h2 class="post-title">Raft算法详解1--Raft基础</h2>
 
+            <ul class="pager blog-pager">
                 
-              </a>
-
-              <p class="post-meta">
-                Posted on March 27, 2018
-              </p>
-              <div class="post-entry">
+                <li class="previous">
+                    <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%951-raft%E5%9F%BA%E7%A1%80/" data-toggle="tooltip" data-placement="top" title="Raft算法详解1--Raft基础">&larr; Previous Post</a>
+                </li>
+                 
+            </ul>
+            
+            <div>
+                 
+                <h2>See Also</h2>
+                <ul>
+                    
+                    <li><a href="/post/technology-blog/blockchain/raft%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%951-raft%E5%9F%BA%E7%A1%80/">Raft算法详解1--Raft基础</a></li>
+                    
+                    <li><a href="/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A32--raft%E7%AE%97%E6%B3%95%E6%A6%82%E8%A7%88/">Raft算法详解2--Raft算法概要</a></li>
+                    
+                </ul>
                 
-                  介绍 本文介绍了Raft协议的三种核心的角色和时间周期的概念，并说明了角色之间的转换过程。通过本文的学习，可以理解Raft共识算法的三种角色，
-                  <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%951-raft%E5%9F%BA%E7%A1%80/" class="post-read-more">[Read More]</a>
-                
-              </div>
+            </div>
+            
+            
+            
+            
+<div>
+    <section id="datecount">
+        <h4 id="date"> Mon Apr 16, 2018</h4>
+    </section>
+    <h5 id="wc">1600 Words|Read in about 4 Min</h5>
+    <h5 id="tags">Tags: 
+        
+        <a href="https://hoverzheng.github.iotags/raft/">Raft</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/">共识算法</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/blockchain/">blockchain</a> &nbsp;
+    </h5>
+</div>
 
-              
-                <span class="post-meta">
-                  
-                    #<a href="https://hoverzheng.github.io/tags/raft/">Raft</a>&nbsp;
-                  
-                    #<a href="https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/">共识算法</a>&nbsp;
-                  
-                    #<a href="https://hoverzheng.github.io/tags/blockchain/">blockchain</a>&nbsp;
-                  
-                </span>
-              
-
-            </article>
-          
-            <article class="post-preview">
-              <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A32--raft%E7%AE%97%E6%B3%95%E6%A6%82%E8%A7%88/">
-                <h2 class="post-title">Raft算法详解2--Raft算法概要</h2>
-
-                
-              </a>
-
-              <p class="post-meta">
-                Posted on March 27, 2018
-              </p>
-              <div class="post-entry">
-                
-                  Raft算法介绍 Raft是一个共识算法，用来管理复制日志(replicated log)，关于复制日志后面有讲述。本文以简明形式总结了该算法，
-                  <a href="https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A32--raft%E7%AE%97%E6%B3%95%E6%A6%82%E8%A7%88/" class="post-read-more">[Read More]</a>
-                
-              </div>
-
-              
-                <span class="post-meta">
-                  
-                    #<a href="https://hoverzheng.github.io/tags/raft/">Raft</a>&nbsp;
-                  
-                    #<a href="https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/">共识算法</a>&nbsp;
-                  
-                    #<a href="https://hoverzheng.github.io/tags/blockchain/">blockchain</a>&nbsp;
-                  
-                </span>
-              
-
-            </article>
-          
+            
+            </div>
+            
+			
         </div>
-        
-      </div>
     </div>
-  </div>
+    </section>
+</div>
 
     <footer>
   <div class="container">
@@ -338,7 +404,7 @@
           
           <li>
             
-            <a href="https://hoverzheng.github.io/tags/blockchain/index.xml" title="RSS">
+            <a href="https://hoverzheng.github.io/index.xml" title="RSS">
             
               <span class="fa-stack fa-lg">
                 <i class="fa fa-circle fa-stack-2x"></i>
