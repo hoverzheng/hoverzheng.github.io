@@ -14,6 +14,15 @@
     
     
     <item>
+      <title>centos7.0安装hyperledger fabric-1.1环境(first network)</title>
+      <link>https://hoverzheng.github.io/post/technology-blog/blockchain/fabric-1.1%E5%AE%89%E8%A3%85/</link>
+      <pubDate>Wed, 18 Jul 2018 06:55:36 +0800</pubDate>
+      <author>zg_hover@sina.com (hoverzheng)</author>
+      <guid>https://hoverzheng.github.io/post/technology-blog/blockchain/fabric-1.1%E5%AE%89%E8%A3%85/</guid>
+      <description>概述 在安装fabric时，对于依赖组件的安装，官方文档写的不是太有条理，导致很多初学者，在安装时遇到很多问题。 本文介绍了fabric在cen</description>
+    </item>
+    
+    <item>
       <title>Raft算法详解3—选主(Leader election)</title>
       <link>https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A33--%E9%80%89%E4%B8%BB/</link>
       <pubDate>Mon, 16 Apr 2018 06:40:36 +0640</pubDate>
