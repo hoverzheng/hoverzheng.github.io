@@ -3,7 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://hoverzheng.github.io/post/technology-blog/go/goroutine-leak%E5%92%8C%E8%A7%A3%E5%86%B3%E4%B9%8B%E9%81%93/</loc>
+    <lastmod>2018-07-16T06:55:36+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hoverzheng.github.io/post/technology-blog/blockchain/raft%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A33--%E9%80%89%E4%B8%BB/</loc>
+    <lastmod>2018-04-16T06:40:36+06:40</lastmod>
+  </url>
+  
+  <url>
     <loc>https://hoverzheng.github.io/post/technology-blog/bigdata/</loc>
+    <lastmod>2018-03-27T07:00:53+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://hoverzheng.github.io/post/technology-blog/go/</loc>
     <lastmod>2018-03-27T07:00:53+08:00</lastmod>
   </url>
   
@@ -62,19 +77,43 @@
   
   <url>
     <loc>https://hoverzheng.github.io/tags/blockchain/</loc>
-    <lastmod>2018-03-27T06:55:36+08:00</lastmod>
+    <lastmod>2018-04-16T06:40:36+06:40</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://hoverzheng.github.io/categories/blockchain/</loc>
-    <lastmod>2018-03-27T06:58:53+08:00</lastmod>
+    <lastmod>2018-04-16T06:40:36+06:40</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://hoverzheng.github.io/categories/</loc>
     <lastmod>2018-03-18T21:54:14+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://hoverzheng.github.io/tags/channel/</loc>
+    <lastmod>2018-07-16T06:55:36+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://hoverzheng.github.io/tags/go/</loc>
+    <lastmod>2018-07-16T06:55:36+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://hoverzheng.github.io/categories/go/</loc>
+    <lastmod>2018-07-16T06:55:36+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://hoverzheng.github.io/tags/goroutine/</loc>
+    <lastmod>2018-07-16T06:55:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -96,13 +135,13 @@
   
   <url>
     <loc>https://hoverzheng.github.io/tags/raft/</loc>
-    <lastmod>2018-03-27T06:55:36+08:00</lastmod>
+    <lastmod>2018-04-16T06:40:36+06:40</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://hoverzheng.github.io/tags/</loc>
-    <lastmod>2018-03-27T06:55:36+08:00</lastmod>
+    <lastmod>2018-04-16T06:40:36+06:40</lastmod>
     <priority>0</priority>
   </url>
   
@@ -113,13 +152,13 @@
   
   <url>
     <loc>https://hoverzheng.github.io/</loc>
-    <lastmod>2018-03-27T06:55:36+08:00</lastmod>
+    <lastmod>2018-07-16T06:55:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://hoverzheng.github.io/tags/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2018-03-27T06:55:36+08:00</lastmod>
+    <lastmod>2018-04-16T06:40:36+06:40</lastmod>
     <priority>0</priority>
   </url>
   

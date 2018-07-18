@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Goroutine Leak和解决之道</title>
+  <meta property="og:title" content="Goroutine Leak和解决之道" />
+  <meta name="twitter:title" content="Goroutine Leak和解决之道" />
+  <meta name="description" content="概述 在Go中，goroutine很轻量级，随便创建成千上万个goroutine不是问题，但要注意，要是这么多的goroutine一致递增，而">
+  <meta property="og:description" content="概述 在Go中，goroutine很轻量级，随便创建成千上万个goroutine不是问题，但要注意，要是这么多的goroutine一致递增，而">
+  <meta name="twitter:description" content="概述 在Go中，goroutine很轻量级，随便创建成千上万个goroutine不是问题，但要注意，要是这么多的goroutine一致递增，而">
+  <meta name="author" content="hoverzheng"/>
+  <link href='https://hoverzheng.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
+  <meta property="og:image" content="https://hoverzheng.github.io/img/avatar-icon.png" />
+  <meta name="twitter:image" content="https://hoverzheng.github.io/img/avatar-icon.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta property="og:url" content="https://hoverzheng.github.io/post/technology-blog/go/goroutine-leak%E5%92%8C%E8%A7%A3%E5%86%B3%E4%B9%8B%E9%81%93/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="hoverzheng" />
+
+  <meta name="generator" content="Hugo 0.38.2" />
+  <link rel="canonical" href="https://hoverzheng.github.io/post/technology-blog/go/goroutine-leak%E5%92%8C%E8%A7%A3%E5%86%B3%E4%B9%8B%E9%81%93/" />
+  <link rel="alternate" href="https://hoverzheng.github.io/index.xml" type="application/rss+xml" title="hoverzheng">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.css" integrity="sha384-wITovz90syo1dJWVh32uuETPVEtGigN07tkttEqPv+uR2SE/mbQcG7ATL28aI9H0" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://hoverzheng.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="https://hoverzheng.github.io/css/highlight.min.css" /><link rel="stylesheet" href="https://hoverzheng.github.io/css/codeblock.css" />
+
+
+<script>
+   var _hmt = _hmt || [];
+   (function() {
+     var hm = document.createElement("script");
+     hm.src = "https://hm.baidu.com/hm.js?b2a5f699eda7187b83d1168fe6ea9aa3";
+     var s = document.getElementsByTagName("script")[0]; 
+     s.parentNode.insertBefore(hm, s);
+   })();
+</script>
+
+
+<link rel="stylesheet" href="https://hoverzheng.github.io/css/prism.css" />
+
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://hoverzheng.github.io">hoverzheng</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li class="navlinks-container">
+              <a class="navlinks-parent" href="javascript:void(0)">Blogs</a>
+              <div class="navlinks-children">
+                
+                  <a href="/post/technology-blog/architect/">Architect</a>
+                
+                  <a href="/post/technology-blog/bigdata/">BigData</a>
+                
+                  <a href="/post/technology-blog/blockchain/">BlockChain</a>
+                
+                  <a href="/post/technology-blog/go/">Go Programming</a>
+                
+                  <a href="/post/readbooks/">ReadBooks</a>
+                
+                  <a href="/tags">Tags</a>
+                
+              </div>
+            </li>
+          
+        
+          
+            <li class="navlinks-container">
+              <a class="navlinks-parent" href="javascript:void(0)">Projects</a>
+              <div class="navlinks-children">
+                
+                  <a href="https://github.com/hoverzheng/dmagent">dmagent</a>
+                
+              </div>
+            </li>
+          
+        
+          
+            <li class="navlinks-container">
+              <a class="navlinks-parent" href="javascript:void(0)">Gitbooks</a>
+              <div class="navlinks-children">
+                
+                  <a href="/redis-source-code-scenario-analysis/">Redis Code Scenario Analysis</a>
+                
+                  <a href="/java-concurrent-programming/">Java Concurrent Programming</a>
+                
+              </div>
+            </li>
+          
+        
+          
+            <li>
+              <a title="AboutMe" href="/page/about/">AboutMe</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    <div class="avatar-container">
+      <div class="avatar-img-border">
+        
+          <a title="hoverzheng" href="https://hoverzheng.github.io">
+            <img class="avatar-img" src="https://hoverzheng.github.io/img/avatar-icon.png" alt="hoverzheng" />
+          </a>
+        
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+
+
+    
+  
+  
+  
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              <h1>Goroutine Leak和解决之道</h1>
+                
+                
+                  <span class="post-meta">
+  
+  
+  <i class="fa fa-calendar-o"></i>&nbsp;Posted on July 16, 2018
+  
+  
+  &nbsp;|&nbsp;
+  <i class="fa fa-clock-o"></i> 5 minutes (2165 words)
+  
+  
+</span>
+
+
+                
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main" itemscope itemtype="http://schema.org/Article">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            
+            
+            
+<div>
+    <section id="datecount">
+        <h4 id="date"> Mon Jul 16, 2018</h4>
+    </section>
+    <h5 id="wc">2200 Words|Read in about 5 Min</h5>
+    <h5 id="tags">Tags: 
+        
+        <a href="https://hoverzheng.github.iotags/go/">Go</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/channel/">Channel</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/goroutine/">Goroutine</a> &nbsp;
+    </h5>
+</div>
+
+            
+            <article role="main" class="blog-post" itemprop="articleBody" id="content">
+                
+
+<h2 id="概述">概述</h2>
+
+<p>在Go中，goroutine很轻量级，随便创建成千上万个goroutine不是问题，但要注意，要是这么多的goroutine一致递增，而不退出，不释放资源，可就麻烦了。
+本文介绍goroutine泄露的实际场景，并讨论如何解决该问题。</p>
+
+<h2 id="产生原因分析">产生原因分析</h2>
+
+<p>产生goroutine leak（协程泄露）的原因可能有以下几种：
+* goroutine由于channel的读/写端退出而一直阻塞，导致goroutine一直占用资源，而无法退出
+* goroutine进入死循环中，导致资源一直无法释放</p>
+
+<h3 id="goroutine终止的场景">goroutine终止的场景</h3>
+
+<p>一个goroutine终止有以下几种情况：
+* 当一个goroutine完成它的工作
+* 由于发生了没有处理的错误
+* 有其他的协程告诉它终止</p>
+
+<h2 id="实际的goroutine-leak">实际的goroutine leak</h2>
+
+<h3 id="生产者消费者场景">生产者消费者场景</h3>
+
+<h4 id="代码">代码</h4>
+
+<pre><code>func main() {
+	newRandStream := func() &lt;-chan int {
+		randStream := make(chan int)
+
+		go func() {
+			defer fmt.Println(&quot;newRandStream closure exited.&quot;)
+			defer close(randStream)
+			// 死循环：不断向channel中放数据，直到阻塞
+			for {
+				randStream &lt;- rand.Int()
+			}
+		}()
+
+		return randStream
+	}
+
+	randStream := newRandStream()
+	fmt.Println(&quot;3 random ints:&quot;)
+
+	// 只消耗3个数据，然后去做其他的事情，此时生产者阻塞，
+	// 若主goroutine不处理生产者goroutine，则就产生了泄露
+	for i := 1; i &lt;= 3; i++ {
+		fmt.Printf(&quot;%d: %d\n&quot;, i, &lt;-randStream)
+	}
+
+	fmt.Fprintf(os.Stderr, &quot;%d\n&quot;, runtime.NumGoroutine())
+	time.Sleep(10e9)
+	fmt.Fprintf(os.Stderr, &quot;%d\n&quot;, runtime.NumGoroutine())
+}
+</code></pre>
+
+<p>生产协程进入死循环，不断产生数据，消费协程，也就是主协程只消费其中的3个值，然后主协程就再也不消费channel中的数据，去做其他的事情了。此时生产协程放了一个数据到channel中，但已经不会有协程消费该数据了，所以，生产协程阻塞。
+此时，若没有人再消费channel中的数据，生成协程是被泄露的协程。</p>
+
+<h4 id="解决办法">解决办法</h4>
+
+<p>总的来说，要解决channel引起的goroutine leak问题，主要是看在channel阻塞goroutine时，该goroutine的阻塞是正常的，还是可能导致协程永远没有机会执行。若可能导致协程永远没有机会执行，则可能会导致协程泄露。
+所以，在创建协程时就要考虑到它该如何终止。</p>
+
+<p>解决一般问题的办法就是，当主线程结束时，告知生产线程，生产线程得到通知后，进行清理工作：或退出，或做一些清理环境的工作。</p>
+
+<pre><code>func main() {
+	newRandStream := func(done &lt;-chan interface{}) &lt;-chan int {
+		randStream := make(chan int)
+
+		go func() {
+			defer fmt.Println(&quot;newRandStream closure exited.&quot;)
+			defer close(randStream)
+
+			for {
+				select {
+				case randStream &lt;- rand.Int():
+				case &lt;-done:  // 得到通知，结束自己
+					return
+				}
+			}
+		}()
+
+		return randStream
+	}
+
+
+	done := make(chan interface{})
+	randStream := newRandStream(done)
+	fmt.Println(&quot;3 random ints:&quot;)
+
+	for i := 1; i &lt;= 3; i++ {
+		fmt.Printf(&quot;%d: %d\n&quot;, i, &lt;-randStream)
+	}
+
+    // 通知子协程结束自己
+    // done &lt;- struct{}{}
+	close(done)
+	// Simulate ongoing work
+	time.Sleep(1 * time.Second)
+}
+</code></pre>
+
+<p>上面的代码中，协程通过一个channel来得到结束的通知，这样它就可以清理现场。防止协程泄露。
+通知协程结束的方式，可以是发送一个空的struct，更加简单的方式是直接close channel。如上图所示。</p>
+
+<h3 id="master-work场景">master work场景</h3>
+
+<p>在该场景下，我们一般是把工作划分成多个子工作，把每个子工作交给每个goroutine来完成。此时若处理不当，也是有可能发生goroutine泄漏的。我们来看一下实际的例子：</p>
+
+<h4 id="代码-1">代码</h4>
+
+<pre><code>// function to add an array of numbers.
+func worker_adder(s []int, c chan int) {
+	sum := 0
+	for _, v := range s {
+		sum += v
+	}
+	// writes the sum to the go routines.
+	c &lt;- sum // send sum to c
+	fmt.Println(&quot;end&quot;)
+}
+
+func main() {
+	s := []int{7, 2, 8, -9, 4, 0}
+
+	c1 := make(chan int)
+	c2 := make(chan int)
+
+	// spin up a goroutine.
+	go worker_adder(s[:len(s)/2], c1)
+	// spin up a goroutine.
+	go worker_adder(s[len(s)/2:], c2)
+
+	//x, y := &lt;-c1, &lt;-c2 // receive from c1 aND C2
+	x, _:= &lt;-c1
+	// 输出从channel获取到的值
+	fmt.Println(x)
+
+	fmt.Println(runtime.NumGoroutine())
+	time.Sleep(10e9)
+	fmt.Println(runtime.NumGoroutine())
+}
+</code></pre>
+
+<p>以上代码在主协程中，把一个数组分成两个部分，分别交给两个worker协程来计算其值，这两个协程通过channel把结果传回给主协程。
+但，在以上代码中，我们只接收了一个channel的数据，导致另一个协程在写channel时阻塞，再也没有执行的机会。
+要是我们把这段代码放入一个常驻服务中，看的更加明显：</p>
+
+<h3 id="http-server-场景">http server 场景</h3>
+
+<h4 id="代码-2">代码</h4>
+
+<pre><code>// 把数组s中的数字加起来
+func sumInt(s []int, c chan int) {
+	sum := 0
+	for _, v := range s {
+		sum += v
+	}
+	c &lt;- sum
+}
+
+// HTTP handler for /sum
+func sumConcurrent2(w http.ResponseWriter, r *http.Request) {
+	s := []int{7, 2, 8, -9, 4, 0}
+
+	c1 := make(chan int)
+	c2 := make(chan int)
+
+	go sumInt(s[:len(s)/2], c1)
+	go sumInt(s[len(s)/2:], c2)
+
+	// 这里故意不在c2中读取数据，导致向c2写数据的协程阻塞。
+	x := &lt;-c1
+
+	// write the response.
+	fmt.Fprintf(w, strconv.Itoa(x))
+}
+
+func main() {
+	StasticGroutine := func() {
+		for {
+			time.Sleep(1e9)
+			total := runtime.NumGoroutine()
+			fmt.Println(total)
+		}
+	}
+
+	go StasticGroutine()
+
+	http.HandleFunc(&quot;/sum&quot;, sumConcurrent2)
+	err := http.ListenAndServe(&quot;:8001&quot;, nil)
+	if err != nil {
+		log.Fatal(&quot;ListenAndServe: &quot;, err)
+	}
+}
+</code></pre>
+
+<p>如果运行以上程序，并在浏览器中输入：</p>
+
+<pre><code>http://127.0.0.1:8001/sum
+</code></pre>
+
+<p>并不断刷新浏览器，来不断发送请求，可以看到以下输出：</p>
+
+<pre><code>2
+2
+5
+6
+7
+8
+9
+10
+</code></pre>
+
+<p>这个输出是我们的http server的协程数量，可以看到：每请求一次，协程数就增加一个，而且不会减少。说明已经发生了协程泄露(goroutine leak)。</p>
+
+<h4 id="解决办法-1">解决办法</h4>
+
+<p>解决的办法就是不管在任何情况下，都必须要有协程能够读写channel，让协程不会阻塞。
+代码修改如下：</p>
+
+<pre><code>...
+	x,y := &lt;-c1,&lt;-c2
+
+	// write the response.
+	fmt.Fprintf(w, strconv.Itoa(x+y))
+...
+</code></pre>
+
+<h2 id="如何调试和发现goroutine-leak">如何调试和发现goroutine leak</h2>
+
+<h3 id="runtime">runtime</h3>
+
+<p>可以通过runtime.NumGoroutine()函数来获取后台服务的协程数量。通过查看每次的协程数量的变化和增减，我们可以判断是否有goroutine泄露发生。</p>
+
+<pre><code>...
+	fmt.Fprintf(os.Stderr, &quot;%d\n&quot;, runtime.NumGoroutine())
+	time.Sleep(10e9) //等一会，查看协程数量的变化
+	fmt.Fprintf(os.Stderr, &quot;%d\n&quot;, runtime.NumGoroutine())
+...
+</code></pre>
+
+<h3 id="pprof来确认泄露的地方">pprof来确认泄露的地方</h3>
+
+<p>一旦我们发现了goroutein leak，我们就需要确认泄露的出处。</p>
+
+<pre><code>import (
+  &quot;runtime/debug&quot;
+  &quot;runtime/pprof&quot;
+)
+
+func getStackTraceHandler(w http.ResponseWriter, r *http.Request) {
+    stack := debug.Stack()
+    w.Write(stack)
+    pprof.Lookup(&quot;goroutine&quot;).WriteTo(w, 2)
+}
+func main() {
+    http.HandleFunc(&quot;/_stack&quot;, getStackTraceHandler)
+}
+</code></pre>
+
+<h2 id="总结">总结</h2>
+
+<p>goroutine leak往往是由于协程在channel上发生阻塞，或协程进入死循环，特别是在一些后台的常驻服务中。
+在使用channel和goroutine时要注意：
+* 创建goroutine时就要想好该goroutine该如何结束
+* 使用channel时，要考虑到channel阻塞时协程可能的行为
+* 要注意平时一些常见的goroutine leak的场景，包括：master-worker模式，producer-consumer模式等等。</p>
+
+<h2 id="参考url">参考url</h2>
+
+<ul>
+<li>《Concurrency in Go》</li>
+<li><a href="https://blog.golang.org/pipelines">https://blog.golang.org/pipelines</a></li>
+<li><a href="https://blog.golang.org/context">https://blog.golang.org/context</a></li>
+<li><a href="https://www.openmymind.net/Leaking-Goroutines/">https://www.openmymind.net/Leaking-Goroutines/</a></li>
+<li><a href="https://blog.minio.io/debugging-go-routine-leaks-a1220142d32c">https://blog.minio.io/debugging-go-routine-leaks-a1220142d32c</a></li>
+</ul>
+
+            </article>
+
+            <ul class="pager blog-pager">
+                 
+            </ul>
+            
+            <div>
+                 
+            </div>
+            
+            
+            
+            
+<div>
+    <section id="datecount">
+        <h4 id="date"> Mon Jul 16, 2018</h4>
+    </section>
+    <h5 id="wc">2200 Words|Read in about 5 Min</h5>
+    <h5 id="tags">Tags: 
+        
+        <a href="https://hoverzheng.github.iotags/go/">Go</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/channel/">Channel</a> &nbsp;
+        
+        <a href="https://hoverzheng.github.iotags/goroutine/">Goroutine</a> &nbsp;
+    </h5>
+</div>
+
+            
+            </div>
+            
+			
+        </div>
+    </div>
+    </section>
+</div>
+
+    <footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+              <li>
+                <a href="mailto:zg_hover@sina.com" title="Email me">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/hoverzheng" title="GitHub">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://www.xing.com/profile/justdoit-hover" title="Xing">
+                  <span class="fa-stack fa-lg">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-xing fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          
+          <li>
+            
+            <a href="https://hoverzheng.github.io/index.xml" title="RSS">
+            
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+            
+              <a href="hoverzheng.github.io">hoverzheng</a>
+            
+          
+
+          &nbsp;&bull;&nbsp;
+          2018
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://hoverzheng.github.io">hoverzheng</a>
+          
+        </p>
+        
+        <p class="credits theme-by text-muted">
+          <a href="http://gohugo.io">Hugo v0.38.2</a> powered &nbsp;&bull;&nbsp; Theme by <a href="http://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a> adapted to <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/katex.min.js" integrity="sha384-/y1Nn9+QQAipbNQWU65krzJralCnuOasHncUFXGkdwntGeSvQicrYkiUBwsgUqc1" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.7.1/contrib/auto-render.min.js" integrity="sha384-dq1/gEHSxPZQ7DdrM82ID4YVol9BYyU7GbWlIwnwyPzotpoc57wDw/guX8EaYGPx" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://hoverzheng.github.io/js/main.js"></script>
+<script src="https://hoverzheng.github.io/js/highlight.min.js"></script>
+<script> hljs.initHighlightingOnLoad(); </script>
+<script> $(document).ready(function() {$("pre.chroma").css("padding","0");}); </script><script> renderMathInElement(document.body); </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
+<script src="https://hoverzheng.github.io/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+  </body>
+</html>
+
