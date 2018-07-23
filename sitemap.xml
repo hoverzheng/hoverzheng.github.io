@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://hoverzheng.github.io/post/technology-blog/blockchain/%E9%80%9A%E8%BF%87rest%E6%8E%A5%E5%8F%A3%E8%AE%BF%E9%97%AEfabric%E7%BD%91%E7%BB%9C/</loc>
+    <lastmod>2018-07-23T19:37:36+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://hoverzheng.github.io/post/technology-blog/blockchain/fabric-1.1%E5%AE%89%E8%A3%85/</loc>
     <lastmod>2018-07-18T06:55:36+08:00</lastmod>
   </url>
@@ -82,13 +87,13 @@
   
   <url>
     <loc>https://hoverzheng.github.io/tags/blockchain/</loc>
-    <lastmod>2018-07-18T06:55:36+08:00</lastmod>
+    <lastmod>2018-07-23T19:37:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://hoverzheng.github.io/categories/blockchain/</loc>
-    <lastmod>2018-07-18T06:55:36+08:00</lastmod>
+    <lastmod>2018-07-23T19:37:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -112,7 +117,7 @@
   
   <url>
     <loc>https://hoverzheng.github.io/tags/fabric/</loc>
-    <lastmod>2018-07-18T06:55:36+08:00</lastmod>
+    <lastmod>2018-07-23T19:37:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -157,8 +162,14 @@
   </url>
   
   <url>
+    <loc>https://hoverzheng.github.io/tags/rest%E6%8E%A5%E5%8F%A3/</loc>
+    <lastmod>2018-07-23T19:37:36+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://hoverzheng.github.io/tags/</loc>
-    <lastmod>2018-07-18T06:55:36+08:00</lastmod>
+    <lastmod>2018-07-23T19:37:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -169,7 +180,7 @@
   
   <url>
     <loc>https://hoverzheng.github.io/</loc>
-    <lastmod>2018-07-18T06:55:36+08:00</lastmod>
+    <lastmod>2018-07-23T19:37:36+08:00</lastmod>
     <priority>0</priority>
   </url>
   
