@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>BigData on hoverzheng</title>
-    <link>https://hoverzheng.github.io/post/technology-blog/bigdata/</link>
-    <description>Recent content in BigData on hoverzheng</description>
+    <title>Kafka on hoverzheng</title>
+    <link>https://hoverzheng.github.io/tags/kafka/</link>
+    <description>Recent content in Kafka on hoverzheng</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <managingEditor>zg_hover@sina.com (hoverzheng)</managingEditor>
     <webMaster>zg_hover@sina.com (hoverzheng)</webMaster>
-    <lastBuildDate>Tue, 27 Mar 2018 07:00:53 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 28 Jul 2018 06:55:36 +0800</lastBuildDate>
     
-	<atom:link href="https://hoverzheng.github.io/post/technology-blog/bigdata/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://hoverzheng.github.io/tags/kafka/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
